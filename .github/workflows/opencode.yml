@@ -24,12 +24,12 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: KP-Knowledge/code-reviewer
-          path: code-reviewer
+          path: ../agent-skills
 
       - name: Setup Agent skill
         run: |
           mkdir -p ~/.config/opencode
-          cp -r code-reviewer/.opencode/* ~/.config/opencode/
+          cp -r ../agent-skills/.opencode/* ~/.config/opencode/
 
       - name: Create auth.json
         run: |
