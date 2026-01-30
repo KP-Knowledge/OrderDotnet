@@ -1,0 +1,253 @@
+{
+    "projectName": "OrderDotnet",
+    "description": "A REST API service for order management system built with .NET following Clean Architecture principles",
+    "architecture": {
+        "pattern": "Clean Architecture",
+        "layers": [
+            "Api - REST API controllers and endpoints",
+            "Application - Use cases, services, and DTOs",
+            "Domain - Entities, aggregates, value objects, and business logic",
+            "Infrastructure - Repository implementations and EF Core configurations"
+        ],
+        "additionalComponents": [
+            "Workflow - Temporal workflow activities and workflows",
+            "DatabaseMigration - EF Core database migrations"
+        ]
+    },
+    "documents": [
+        {
+            "file": "4th_Iteration_Implementation.md",
+            "title": "4th Iteration Implementation Summary",
+            "summary": "Documents the implementation of OrderItem entity with complete CRUD operations",
+            "keyTopics": [
+                "OrderItem domain model with ProductId, Quantity, NetAmount, GrossAmount, Currency fields",
+                "Repository pattern implementation (IOrderItemRepository)",
+                "Entity Framework configuration with PostgreSQL",
+                "REST API endpoints for order items management",
+                "Order 1-to-many OrderItem relationship with bidirectional navigation"
+            ],
+            "endpoints": [
+                "POST /api/orders/items - Add order item",
+                "PUT /api/orders/items - Update order item",
+                "DELETE /api/orders/items/{id} - Remove order item",
+                "GET /api/orders/{orderId}/items - Get order items"
+            ]
+        },
+        {
+            "file": "CLEANUP_SUMMARY.md",
+            "title": "MediatR Cleanup Summary",
+            "summary": "Documents the removal of MediatR and simplification to direct service injection",
+            "keyTopics": [
+                "Removed all MediatR commands, queries, and handlers",
+                "Removed FluentValidation validators",
+                "Simplified to direct OrderService injection",
+                "Maintained clean architecture with proper separation of concerns"
+            ],
+            "status": "Completed - All tests passing"
+        },
+        {
+            "file": "NavigationPropertiesTest.md",
+            "title": "Navigation Properties Test Documentation",
+            "summary": "Documents bidirectional navigation properties between Order and related entities",
+            "relationships": [
+                "Order ↔ OrderLoyalty (1-to-many)",
+                "Order ↔ OrderStock (1-to-many)",
+                "Order ↔ OrderPayment (1-to-1)"
+            ],
+            "benefits": [
+                "Easier navigation from child entities to parent Order",
+                "Cleaner code with reduced repository calls",
+                "Performance optimization with EF Core relationships",
+                "Type safety and IntelliSense support"
+            ]
+        },
+        {
+            "file": "OrderState.md",
+            "title": "Order State Transition System",
+            "summary": "Documents the state machine implementation for order processing",
+            "orderStates": [
+                "Initial - Starting state when order is created",
+                "Pending - Order awaiting payment or processing",
+                "Paid - Payment received and confirmed",
+                "Refunded - Payment refunded to customer",
+                "Completed - Order successfully fulfilled",
+                "Cancelled - Order cancelled and will not be processed"
+            ],
+            "validTransitions": [
+                "Initial → Pending",
+                "Pending → Paid or Cancelled",
+                "Paid → Completed or Refunded",
+                "Refunded → Cancelled",
+                "Completed → Cancelled",
+                "Cancelled → Pending (reactivation)"
+            ],
+            "designPrinciples": [
+                "Immutability with records and readonly collections",
+                "Single Responsibility for state validation",
+                "Open/Closed Principle for extensibility",
+                "Fail-Fast Validation"
+            ]
+        },
+        {
+            "file": "PRD_Order.md",
+            "title": "Product Requirements Document - Order",
+            "summary": "Main requirements document describing order management system features and iterations",
+            "iterations": [
+                {
+                    "iteration": 1,
+                    "description": "Basic Order model with state design pattern"
+                },
+                {
+                    "iteration": 2,
+                    "description": "OrderLoyalty, OrderPayment, OrderStock models and aggregates"
+                },
+                {
+                    "iteration": 3,
+                    "description": "Repository layer with CRUD operations and EF Core implementation"
+                },
+                {
+                    "iteration": 4,
+                    "description": "OrderItem model with product details and pricing"
+                },
+                {
+                    "iteration": 5,
+                    "description": "Refactored InitialOrderAsync with orderItems array and temporal workflow"
+                },
+                {
+                    "iteration": 6,
+                    "description": "ReserveStock use case with idempotency handling"
+                },
+                {
+                    "iteration": 7,
+                    "description": "OrderJourneys and OrderLogs modules for state tracking"
+                },
+                {
+                    "iteration": 8,
+                    "description": "ChangeOrderStatusToPending use case with workflow reset"
+                }
+            ],
+            "domainModels": [
+                "Order - Main order entity",
+                "OrderLoyalty - Loyalty program earn/burn points",
+                "OrderPayment - Payment records",
+                "OrderStock - Stock reservations",
+                "OrderItem - Order line items",
+                "OrderJourneys - State transition history",
+                "OrderLogs - Action logging"
+            ]
+        },
+        {
+            "file": "PRD_OrderWorkflow.md",
+            "title": "Product Requirements Document - Order Workflow",
+            "summary": "Requirements for Temporal workflow implementation",
+            "activities": [
+                "StartOrderWorkflow - Initialize workflow with workflowId and orderId",
+                "ReserveStock - Reserve inventory",
+                "BurnLoyaltyTransaction - Process loyalty point burning",
+                "EarnLoyaltyTransaction - Process loyalty point earning",
+                "ProcessPayment - Handle payment processing",
+                "CompletedCart - Complete the order",
+                "GetOrderDetail - Retrieve order details"
+            ],
+            "workflow": "OrderProcessingWorkflow"
+        },
+        {
+            "file": "test_idempotency.md",
+            "title": "Order Service Idempotency Test",
+            "summary": "Documents idempotency implementation for InitialOrderAsync",
+            "features": [
+                "Idempotency by ReferenceId - checks existing order before creation",
+                "PaymentMethod.FromString() factory method in domain layer",
+                "Comprehensive error handling with validation"
+            ],
+            "supportedPaymentMethods": [
+                "creditcard/credit_card/credit-card",
+                "debitcard/debit_card/debit-card",
+                "banktransfer/bank_transfer/bank-transfer",
+                "digitalwallet/digital_wallet/digital-wallet/wallet",
+                "cash"
+            ],
+            "status": "Implemented and tested"
+        },
+        {
+            "file": "TransitionOrderState_Implementation.md",
+            "title": "OrderAggregate TransitionOrderState Implementation",
+            "summary": "Documents the TransitionOrderState functionality in OrderAggregate",
+            "keyComponents": [
+                "StateTransitionException - Custom domain exception with detailed context",
+                "TransitionOrderState() - Primary state transition method",
+                "SafeTransitionOrderState() - Enhanced method with business rule validation",
+                "IsBusinessRuleCompliantTransition() - Business rule validation"
+            ],
+            "features": [
+                "Idempotent operations - same transition has no additional effect",
+                "Comprehensive error handling with StateTransitionException",
+                "Business rule validation layer",
+                "Audit trail with logging and version incrementing"
+            ],
+            "businessRules": [
+                "Paid State - requires sufficient payments",
+                "Completed State - requires full payment and confirmed stock",
+                "Cancelled State - prevents cancellation of completed orders",
+                "Refunded State - only allows refunds of paid/completed orders"
+            ]
+        },
+        {
+            "file": "TransitionOrderStateUseCase_Implementation.md",
+            "title": "TransitionOrderStateUseCase Implementation",
+            "summary": "Documents the application layer use case for order state transitions",
+            "methods": [
+                "TransitionOrderState(orderId, orderState, reason) - Main transition function",
+                "ExecuteAsync(request) - Enhanced request/response pattern",
+                "GetValidNextStatesAsync(orderId) - Query valid next states"
+            ],
+            "dtos": [
+                "TransitionOrderStateRequest - Request model",
+                "TransitionOrderStateResponse - Response with transition results",
+                "StateTransitionErrorDetails - Error details for failures",
+                "GetValidStatesResponse - Valid states query response"
+            ],
+            "integrationPoints": [
+                "API Controllers",
+                "Temporal Workflows",
+                "Event Handlers"
+            ],
+            "features": [
+                "Clean architecture compliance",
+                "Graceful error handling - never throws to callers",
+                "Idempotent operations",
+                "Configurable business rule enforcement"
+            ]
+        }
+    ],
+    "examples": {
+        "directory": "Examples/",
+        "files": [
+            "OrderStateEndpointExample.cs",
+            "OrderStateTransitionExample.cs",
+            "TransitionOrderStateUseCaseExample.cs",
+            "WorkflowEventQueryExamples.cs",
+            "WorkflowHistoryQueryExamples.cs"
+        ]
+    },
+    "technology": {
+        "framework": ".NET 6+",
+        "database": "PostgreSQL",
+        "orm": "Entity Framework Core",
+        "workflow": "Temporal",
+        "patterns": [
+            "Clean Architecture",
+            "Repository Pattern",
+            "Aggregate Pattern",
+            "State Machine Pattern",
+            "Use Case Pattern"
+        ]
+    },
+    "principlesFollowed": [
+        "SOLID principles",
+        "DRY (Don't Repeat Yourself)",
+        "Domain-Driven Design",
+        "Idempotent operations",
+        "Fail-fast validation"
+    ]
+}
