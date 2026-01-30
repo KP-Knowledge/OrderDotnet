@@ -10,7 +10,7 @@ jobs:
   opencode:
     if: |
       contains(github.event.comment.body, '/oc') ||
-      contains(github.event.comment.body, '/opencode')
+      contains(github.event.comment.body, '/opencode-cli')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
