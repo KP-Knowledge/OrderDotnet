@@ -20,6 +20,17 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      - name: Checkout Agent Skill
+        uses: actions/checkout@v6
+        with:
+          repository: KP-Knowledge/code-reviewer
+          path: code-reviewer
+
+      - name: Setup Agent skill
+        run: |
+          mkdir -p ~/.config/opencode
+          cp -r code-reviewer/.opencode/* ~/.config/opencode/
+
       - name: Create auth.json
         run: |
           printf '{"zai-coding-plan":{"type":"api","key":"%s"}}' \
