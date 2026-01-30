@@ -50,10 +50,10 @@ Pending ←──────────────┐
    ↓                   │
    ├─→ Paid            │
    │    ↓              │
-   │    ├─→ Completed ─┘
-   │    │       ↓
-   │    └─→ Refunded
-   │            ↓
+   │    ├─→ Completed  |
+   │    │       ↓      |
+   │    └─→ Refunded   |
+   │            ↓      |
    └─→ Cancelled ──────┘
 ```
 

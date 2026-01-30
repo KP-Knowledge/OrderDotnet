@@ -1,0 +1,37 @@
+name: opencode
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  opencode:
+    if: |
+      contains(github.event.comment.body, '/oc') ||
+      contains(github.event.comment.body, '/opencode')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Create auth.json
+        run: |
+          printf '{"zai-coding-plan":{"type":"api","key":"%s"}}' \
+            "${{ secrets.ZAI_API_TOKEN }}" \
+            | install -D /dev/stdin ~/.local/share/opencode/auth.json
+
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENCODE_GITHUB_TOKEN }}
+        with:
+          model: zai-coding-plan/glm-4.7
+          use_github_token: true
+          # share: true
+          # github_token: xxxx
