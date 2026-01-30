@@ -1,5 +1,5 @@
 # OrderDotnet
-OrderDotnet is a .NET-based order management system designed to handle the complete lifecycle of an order, from creation to completion. It follows clean architecture principles, utilizing a domain-driven design (DDD) approach to model the order process. The system is built with a focus on scalability, maintainability, and testability, making it suitable for a wide range of e-commerce and order processing applications.
+OrderDotnet is a .NET-based order management system designed to handle the complete lifecycle of an order, from creation to completion. It follows clean architecture principles, utilizing a domain-driven design (DDD) approach to model the order process. The system is built with a focus on scalability, maintainability, and testability, making it suitable for a wide range of e-commerce and order processing applications. c2v2
 
 ## Table of Contents
 - [Features](#features)
